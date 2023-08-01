@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;700&display=swap');
+:root {
+    --light-blue:#31c3bd; 
+    --light-blue-hover:#65e9e4; 
+    --light-yellow:#f2b137; 
+    --light-yellow-hover:#ffc860; 
+    --dark-navy:#1a2a33; 
+    --semi-dark-navy:#1f3641; 
+    --silver:#a8bfc9; 
+    --silver-hover:#dbe8ed; 
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    background-color: var(--dark-navy);
+}
+
+
+/* New Game Menu Styles */
+.menu-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    height: 80vh;
+    align-content: center;
+    align-items: center;
+}
+
+.choice-block {
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px;
+    width: 460px;  /* rework */
+    height: 205px;
+    background-color: var(--semi-dark-navy);
+    box-shadow: 0px -8px 0px 0px #10212A inset;
+    margin-top: 2rem;
+  
+}
+
+.choice-block p {
+    color: var(--silver);
+    text-align: center;
+    padding: 30px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.selection-block {
+    display: flex;
+    justify-content: space-around;
+    background-color: var(--dark-navy);
+    border-radius: 10px;
+    padding: 5px 10px;
+    margin: 0 2rem;
+}
+
+
+/* Buttton */
+.y-button {
+    width: 460px;
+    border: none;
+    padding: 20px;
+    text-transform: uppercase;
+    font-family: Outfit;
+    font-weight: 700;
+    text-align: center;
+    font-size: 20px;
+    border-radius: 15px;
+    letter-spacing: 1.25px;
+    color: var(--dark-navy);
+    background-color: var(--light-yellow);
+    box-shadow: 0px -8px 0px 0px #CC8B13 inset;
+    margin-top: 30px;
+}
+.y-button:active {
+    transform: translateY(4px);
+  }
+
+  
+.g-button {
+    width: 460px;
+    border: none;
+    padding: 20px;
+    text-transform: uppercase;
+    font-family: Outfit;
+    font-weight: 700;
+    text-align: center;
+    font-size: 20px;
+    border-radius: 15px;
+    letter-spacing: 1.25px;
+    color: var(--dark-navy);
+    background-color: #31c3bd;
+    box-shadow: 0px -8px 0px 0px #118C87 inset;
+    margin-top: 30px;
+}
+
+.g-button:active {
+    transform: translateY(4px);
+}
+
+
+/* Mobile Styles */
+@media screen and (max-width:450px) {
+    .choice-block, .y-button, .g-button {
+        width: 327px;
+    }
+    
+}
+
