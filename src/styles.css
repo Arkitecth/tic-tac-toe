@@ -62,6 +62,8 @@ body {
 }
 
 
+
+
 /* Buttton */
 .y-button {
     width: 460px;
@@ -79,12 +81,32 @@ body {
     box-shadow: 0px -8px 0px 0px #CC8B13 inset;
     margin-top: 30px;
 }
-.y-button:active {
+.small-y-btn {
+    width: 146px;
+    border: none;
+    height: 52px;
+    text-transform: uppercase;
+    font-family: Outfit;
+    font-weight: 700;
+    text-align: center;
+    font-size: 1rem;
+    border-radius: 10px;
+    letter-spacing: 1.25px;
+    color: var(--dark-navy);
+    background-color: var(--light-yellow);
+    box-shadow: 0px -4px 0px 0px #CC8B13 inset;
+    margin-left: 30px;
+}
+
+.y-button:active, 
+.small-y-btn:active {
     transform: translateY(4px);
   }
 
+
+
   
-.g-button {
+.green-button{
     width: 460px;
     border: none;
     padding: 20px;
@@ -106,11 +128,172 @@ body {
 }
 
 
+/* Game Start CSS */
+.grid-container {
+    display: grid;
+    grid-template-rows:  repeat(5, 1fr);
+    grid-template-columns: auto auto auto;
+    gap: 3%;
+    justify-items: center;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5%;
+}
+
+.turn-indicator {
+    display: flex;
+    padding: 15px;
+    gap: 30px;
+    background-color: var(--semi-dark-navy);
+    color: var(--silver); 
+    border-radius: 10px;
+    text-transform: uppercase;
+    text-align: center;
+    letter-spacing: 1px;
+    box-shadow: 0px -4px 0px 0px #10212A inset;
+}
+
+.gray-btn {
+    background-color: var(--silver);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px -4px 0px 0px rgba(0, 0, 0, 0.25) inset;
+    border: none;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.gray-btn:hover, 
+.gray-btn:active {
+    background-color: var(--silver-hover);
+}
+.gray-btn:active {
+    transform: translateY(4px);
+}
+
+
+.square {
+    width: 140px;
+    height: 140px;
+    border-radius: 15px;
+    background-color: var(--semi-dark-navy);
+    box-shadow: 0px -8px 0px 0px #10212A inset;
+}
+
+.score-board {
+    border-radius: 15px;
+    background-color: var(--light-blue);
+    font-weight: 500;
+    letter-spacing: 0.875px;
+    text-align: center;
+    width: 140px;
+    height: 72px;
+}
+
+.score-board.silver {
+    background-color: var(--silver);
+}
+
+.score-board.yellow {
+    background-color: var(--light-yellow);
+}
+
+.score-board p {
+    margin-top: 8px;
+    text-transform: uppercase;
+}
+.score-board h2 {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+
+/* Modals */
+.modal {
+    text-align: center;
+    width: 100%;
+    text-transform: uppercase;
+    position: absolute;
+    background-color: var(--semi-dark-navy);
+    color: var(--silver);
+    letter-spacing: 1px;
+    top: 40%;
+    padding: 30px 0;
+}
+
+.modal p {
+    padding-bottom: 10px;
+}
+
+.x-color {
+    color: var(--light-blue);
+}
+
+.o-color {
+    color: var(--light-yellow);
+}
+
+.small-btn {
+    width: fit-content;
+    height: 52px;
+    text-align: center;
+    font-size: 1rem;
+    padding: 15px;
+    margin-left: 20px;
+    box-shadow: 0px -4px 0px 0px #CC8B13 inset;
+}
+
+
+.winner-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 24px;
+    color: var(--light-yellow);
+    padding-bottom: 1rem;
+}
+
+.winner-display h2 {
+    font-size: 2.5rem;
+}
+
+
+
+
+
 /* Mobile Styles */
-@media screen and (max-width:450px) {
-    .choice-block, .y-button, .g-button {
+@media screen and (max-width:465px) {
+    .choice-block, .y-button, .green-button{
         width: 327px;
     }
     
+
+    .winner-display img {
+        width: 30px;
+        height: 30px;
+    }
+
+    .square {
+        width: 96px;
+        height: 96px;
+    }
+
+    .grid-container {
+        margin-top: 30%;
+    }
+
+    img.gray-btn, .turn-indicator, .game-logo {
+        transform: translateY(-100px);
+    }
+
+    .score-board {
+        width: 96px;
+    }
+
+    .winner-display h2 {
+        font-size: 24px;
+    }
 }
 

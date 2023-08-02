@@ -1,10 +1,13 @@
 import logo from "./assets/logo.svg"
 import x from "./assets/icon-x.svg"
 import o from "./assets/icon-o.svg"
+import restart from "./assets/icon-restart.svg"
 function App() {
   return (
     <div className="App">
-      <Menu />
+      {/* <Menu /> */}
+      <Board />
+      {/* <Modal msg={"Oh No You Lost..."} winner={o} roundColor={'yellow'} /> */}
     </div>
   );
 }
@@ -30,18 +33,76 @@ function Menu() {
           </div>
         </div>
 
-        <MenuButton />
+        <MenuButtons />
       </div>
   )
 }
 
-function MenuButton() {
+function MenuButtons() {
   return(
     <>
      <button className="y-button">New Game (VS CPU)</button>
-     <button className="g-button">New Game (VS PLAYER)</button>
+     <button className="green-button">New Game (VS PLAYER)</button>
     </>
    
+  )
+}
+
+function Board() {
+  return(
+    <div className="grid-container">
+        <img className="game-logo" src={logo} alt="logo" />
+        <div className="turn-indicator"> 
+          {/* Small X */}
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M19.7231 3.30608L16.6939 0.276913C16.3247 -0.0923043 15.7261 -0.0923043 15.3569 0.276913L10 5.63378L4.64314 0.276913C4.27392 -0.0923043 3.6753 -0.0923043 3.30608 0.276913L0.276913 3.30608C-0.0923043 3.6753 -0.0923043 4.27392 0.276913 4.64314L5.63378 10L0.276913 15.3569C-0.0923043 15.7261 -0.0923043 16.3247 0.276913 16.6939L3.30608 19.7231C3.6753 20.0923 4.27392 20.0923 4.64314 19.7231L10 14.3662L15.3569 19.7231C15.7261 20.0923 16.3247 20.0923 16.6939 19.7231L19.7231 16.6939C20.0923 16.3247 20.0923 15.7261 19.7231 15.3569L14.3662 10L19.7231 4.64314C20.0923 4.27392 20.0923 3.6753 19.7231 3.30608Z" fill="#A8BFC9"/>
+        </svg>
+          <p>Turn</p>
+        </div>
+        <img className="gray-btn" src={restart} alt="restart" />
+        <Square/>
+        <Square/>
+        <Square/>
+        <Square/>
+        <Square/>
+        <Square/>
+        <Square/>
+        <Square/>
+        <Square/>
+      <ScoreBoard player={'X (You)'}/>
+      <ScoreBoard player={'Ties'} background={'silver'} />
+      <ScoreBoard player={'O (CPU)'} background={'yellow'} /> 
+    </div>
+  )
+}
+
+function Square() {
+  return(
+    <div className="square"></div>
+  )
+}
+
+
+function Modal({msg, winner, roundColor}) {
+  return(
+    <div className="modal">
+      <p>{msg}</p>
+      <div className="winner-display">
+        <img src={winner} alt="winner-img" />
+        <h2 className={roundColor}>Takes the Round</h2>
+      </div>
+      <button className="gray-btn">Quit</button>
+      <button className="small-y-btn">Next Round</button>
+    </div>
+  )
+}
+
+function ScoreBoard({player, background}) {
+  return(
+    <div className={`score-board ${background}`}>
+      <p> {player} </p>
+      <h2>0</h2>
+    </div>
   )
 }
 
