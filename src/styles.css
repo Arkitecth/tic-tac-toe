@@ -81,6 +81,10 @@ body {
     box-shadow: 0px -8px 0px 0px #CC8B13 inset;
     margin-top: 30px;
 }
+
+.y-button:hover {
+    background-color: var(--light-yellow-hover);
+}
 .small-y-btn {
     width: 146px;
     border: none;
@@ -102,6 +106,9 @@ body {
 .small-y-btn:active {
     transform: translateY(4px);
   }
+.small-y-btn:hover {
+    background-color: var(--light-yellow-hover);
+}
 
 
 
@@ -123,8 +130,12 @@ body {
     margin-top: 30px;
 }
 
-.g-button:active {
+.green-button:active {
     transform: translateY(4px);
+}
+
+.green-button:hover {
+    background-color: var(--light-blue-hover);
 }
 
 
