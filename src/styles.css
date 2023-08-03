@@ -62,8 +62,6 @@ body {
 }
 
 
-
-
 /* Buttton */
 .y-button {
     width: 460px;
@@ -109,6 +107,8 @@ body {
 .small-y-btn:hover {
     background-color: var(--light-yellow-hover);
 }
+
+
 
 
 
@@ -190,7 +190,15 @@ body {
     border-radius: 15px;
     background-color: var(--semi-dark-navy);
     box-shadow: 0px -8px 0px 0px #10212A inset;
+    display: flex;
+    align-items: center;
 }
+
+img.letters {
+    margin: 0 auto;
+ }
+
+ 
 
 .score-board {
     border-radius: 15px;

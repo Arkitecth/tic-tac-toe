@@ -58,6 +58,22 @@ function MenuButtons({onButtonClick}) {
 }
 
 function Board() {
+  const [xisNext, setXisNext] = useState(true); 
+  const [squares, setSquares] = useState(Array(9).fill(null)); 
+
+  function handlePlayer(i) {
+    const newSquares = squares.slice(); 
+    if(newSquares[i]) {
+      return; 
+    }
+    if(xisNext) {
+      newSquares[i] = x; 
+    } else {
+      newSquares[i] = o;  
+    }
+    setXisNext(!xisNext);
+    setSquares(newSquares);
+  }
   return(
     <div className="grid-container">
         <img className="game-logo" src={logo} alt="logo" />
@@ -69,26 +85,30 @@ function Board() {
           <p>Turn</p>
         </div>
         <img className="gray-btn" src={restart} alt="restart" />
-        <Square/>
-        <Square/>
-        <Square/>
-        <Square/>
-        <Square/>
-        <Square/>
-        <Square/>
-        <Square/>
-        <Square/>
-      <ScoreBoard player={'X (You)'}/>
-      <ScoreBoard player={'Ties'} background={'silver'} />
-      <ScoreBoard player={'O (CPU)'} background={'yellow'} /> 
+        {squares.map((images, i) => {
+          return <Square player={images} onSquareClick={() => handlePlayer(i)}/>
+        })}
+       
+        <ScoreBoard player={'X (You)'}/>
+        <ScoreBoard player={'Ties'} background={'silver'} />
+        <ScoreBoard player={'O (CPU)'} background={'yellow'} /> 
     </div>
   )
 }
 
-function Square() {
-  return(
-    <div className="square"></div>
-  )
+function Square({player, onSquareClick}) {
+  if(player === null) {
+    return(
+      <div className="square" onClick={onSquareClick}>
+      </div>
+    )
+  } else {
+    return(
+      <div className="square" onClick={onSquareClick}>
+        <img className="letters" src={player}  alt="player" />
+      </div>
+    )
+  }
 }
 
 
