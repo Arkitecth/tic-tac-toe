@@ -1,6 +1,9 @@
 import logo from "./assets/logo.svg"
 import x from "./assets/icon-x.svg"
 import o from "./assets/icon-o.svg"
+import outlineO from "./assets/icon-o-outline.svg";
+import outlineX from "./assets/icon-x-outline.svg";  
+
 import restart from "./assets/icon-restart.svg"
 import { useState } from "react";
 function App() {
@@ -74,6 +77,7 @@ function Board() {
     setXisNext(!xisNext);
     setSquares(newSquares);
   }
+  
   return(
     <div className="grid-container">
         <img className="game-logo" src={logo} alt="logo" />
@@ -97,15 +101,21 @@ function Board() {
 }
 
 function Square({player, onSquareClick}) {
+  let classLetter = undefined; 
+  if(player === o) {
+    classLetter = 'o'; 
+  } else {
+    classLetter = 'x'; 
+  }
   if(player === null) {
     return(
-      <div className="square" onClick={onSquareClick}>
+      <div className="square" onClick={onSquareClick} >
       </div>
     )
   } else {
     return(
       <div className="square" onClick={onSquareClick}>
-        <img className="letters" src={player}  alt="player" />
+        <img className={`letters ${classLetter}`} src={player}  alt="player" />
       </div>
     )
   }

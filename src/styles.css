@@ -198,7 +198,13 @@ img.letters {
     margin: 0 auto;
  }
 
- 
+img.letters.x:hover {
+    content: url('assets/icon-x-outline.svg');
+}
+
+img.letters.o:hover {
+    content: url('assets/icon-o-outline.svg');
+}
 
 .score-board {
     border-radius: 15px;
