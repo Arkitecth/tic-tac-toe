@@ -1,17 +1,13 @@
 import logo from "./assets/logo.svg"
 import x from "./assets/icon-x.svg"
 import o from "./assets/icon-o.svg"
-import outlineO from "./assets/icon-o-outline.svg";
-import outlineX from "./assets/icon-x-outline.svg";  
-
 import restart from "./assets/icon-restart.svg"
-import { useState } from "react";
+import { useState, useEffect} from "react";
+
 function App() {
   return (
     <div className="App">
       <Menu />
-      {/* <Board /> */}
-      {/* <Modal msg={"Oh No You Lost..."} winner={o} roundColor={'yellow'} /> */}
     </div>
   );
 }
@@ -45,24 +41,28 @@ function Menu() {
         </div>
     )
   } else {
-    return <Board />
+    return <Board isVisbile={ show } showMenu={setShow} />
   }
+
+   
  
 }
 
 function MenuButtons({onButtonClick}) {
   return(
     <>
-     <button onClick={onButtonClick} className="y-button">New Game (VS CPU)</button>
-     <button className="green-button">New Game (VS PLAYER)</button>
+     <button className="y-button">New Game (VS CPU)</button>
+     <button onClick={onButtonClick} className="green-button">New Game (VS PLAYER)</button>
     </>
    
   )
 }
 
-function Board() {
+function Board({ isVisbile,  showMenu }) {
   const [xisNext, setXisNext] = useState(true); 
   const [squares, setSquares] = useState(Array(9).fill(null)); 
+
+  let winner = determineWinner(squares); 
 
   function handlePlayer(i) {
     const newSquares = squares.slice(); 
@@ -77,31 +77,47 @@ function Board() {
     setXisNext(!xisNext);
     setSquares(newSquares);
   }
+
+  function handleQuit() {
+    if(!isVisbile) {
+      showMenu(!isVisbile); 
+    }
+  }
   
   return(
     <div className="grid-container">
         <img className="game-logo" src={logo} alt="logo" />
         <div className="turn-indicator"> 
-          {/* Small X */}
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+        {xisNext ?
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
           <path fill-rule="evenodd" clip-rule="evenodd" d="M19.7231 3.30608L16.6939 0.276913C16.3247 -0.0923043 15.7261 -0.0923043 15.3569 0.276913L10 5.63378L4.64314 0.276913C4.27392 -0.0923043 3.6753 -0.0923043 3.30608 0.276913L0.276913 3.30608C-0.0923043 3.6753 -0.0923043 4.27392 0.276913 4.64314L5.63378 10L0.276913 15.3569C-0.0923043 15.7261 -0.0923043 16.3247 0.276913 16.6939L3.30608 19.7231C3.6753 20.0923 4.27392 20.0923 4.64314 19.7231L10 14.3662L15.3569 19.7231C15.7261 20.0923 16.3247 20.0923 16.6939 19.7231L19.7231 16.6939C20.0923 16.3247 20.0923 15.7261 19.7231 15.3569L14.3662 10L19.7231 4.64314C20.0923 4.27392 20.0923 3.6753 19.7231 3.30608Z" fill="#A8BFC9"/>
-        </svg>
+        </svg>: 
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M20 10C20 4.47715 15.5228 0 10 0C4.47715 0 0 4.47715 0 10C0 15.5228 4.47715 20 10 20C15.5228 20 20 15.5228 20 10ZM5.92593 10C5.92593 7.74995 7.74995 5.92593 10 5.92593C12.25 5.92593 14.0741 7.74995 14.0741 10C14.0741 12.25 12.25 14.0741 10 14.0741C7.74995 14.0741 5.92593 12.25 5.92593 10Z" fill="#A8BFC9"/>
+      </svg>
+      }
           <p>Turn</p>
         </div>
         <img className="gray-btn" src={restart} alt="restart" />
         {squares.map((images, i) => {
-          return <Square player={images} onSquareClick={() => handlePlayer(i)}/>
-        })}
-       
+          return <Square key={i} player={images} onSquareClick={() => handlePlayer(i)} id={i}/>
+        })} 
+        
         <ScoreBoard player={'X (You)'}/>
         <ScoreBoard player={'Ties'} background={'silver'} />
         <ScoreBoard player={'O (CPU)'} background={'yellow'} /> 
+        {winner ? 
+            winner[0] === x ? 
+                  <Modal onQuit={handleQuit} msg={"YOU WON!"} winner={x} roundColor={'x-color'} winnerArray={winner}/> : 
+                        <Modal onQuit={handleQuit} msg={"Oh No You Lost..."} winner={o} roundColor={'o-color'} winnerArray={winner}/>: 
+        null}
     </div>
   )
 }
 
-function Square({player, onSquareClick}) {
+function Square({player, onSquareClick, id}) {
   let classLetter = undefined; 
+  
   if(player === o) {
     classLetter = 'o'; 
   } else {
@@ -109,12 +125,13 @@ function Square({player, onSquareClick}) {
   }
   if(player === null) {
     return(
-      <div className="square" onClick={onSquareClick} >
+      <div className={`square a${id}`}  onClick={onSquareClick} >
+        
       </div>
     )
   } else {
     return(
-      <div className="square" onClick={onSquareClick}>
+      <div className={`square a${id}`} onClick={onSquareClick}>
         <img className={`letters ${classLetter}`} src={player}  alt="player" />
       </div>
     )
@@ -122,7 +139,37 @@ function Square({player, onSquareClick}) {
 }
 
 
-function Modal({msg, winner, roundColor}) {
+function Modal({msg, winner, roundColor, winnerArray, onQuit}) {
+  useEffect(() => {
+    highlightWinner(winnerArray[0], winnerArray[1]) 
+  }, [winnerArray]);
+ 
+  function highlightWinner(winnerLetter, winningIndex) {
+    if(!winnerLetter) {
+      return; 
+    }
+
+    const firstSquare = document.querySelector(`div.square.a${winningIndex[0]}`); 
+    const secondSquare =document.querySelector(`div.square.a${winningIndex[1]}`); 
+    const thirdSquare = document.querySelector(`div.square.a${winningIndex[2]}`); 
+
+    if(winnerLetter === x) {
+      firstSquare.classList.add('x-highlight');
+      firstSquare.firstElementChild.classList.add('dark-x'); 
+      secondSquare.classList.add('x-highlight'); 
+      secondSquare.firstElementChild.classList.add('dark-x'); 
+      thirdSquare.classList.add('x-highlight');
+      thirdSquare.firstElementChild.classList.add('dark-x'); 
+     
+    } else {
+      firstSquare.classList.add('o-highlight'); 
+      secondSquare.classList.add('o-highlight'); 
+      thirdSquare.classList.add('o-highlight'); 
+    } 
+  }
+
+
+  
   return(
     <div className="modal">
       <p>{msg}</p>
@@ -130,9 +177,10 @@ function Modal({msg, winner, roundColor}) {
         <img src={winner} alt="winner-img" />
         <h2 className={roundColor}>Takes the Round</h2>
       </div>
-      <button className="gray-btn">Quit</button>
+      <button onClick={onQuit} className="gray-btn">Quit</button>
       <button className="small-y-btn">Next Round</button>
     </div>
+    
   )
 }
 
@@ -143,6 +191,29 @@ function ScoreBoard({player, background}) {
       <h2>0</h2>
     </div>
   )
+}
+
+function determineWinner(squares) {
+  const winningPositions = [
+    [0, 1, 2], 
+    [3, 4, 5], 
+    [6, 7, 8], 
+    [0, 3, 6], 
+    [1, 4, 7], 
+    [2, 5, 8], 
+    [0, 4, 8], 
+    [2, 4, 6] 
+  ]; 
+
+  for(let i = 0; i < winningPositions.length; i++) {
+    const [a, b, c] = winningPositions[i]; 
+    if(squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return [squares[a], winningPositions[i]]; 
+    }
+  }
+
+  return null; 
+
 }
 
 export default App;
