@@ -61,8 +61,32 @@ function MenuButtons({onButtonClick}) {
 function Board({ isVisbile,  showMenu }) {
   const [xisNext, setXisNext] = useState(true); 
   const [squares, setSquares] = useState(Array(9).fill(null)); 
+  const [xScore, setXScore] = useState(0); 
+  const [oScore, setOScore] = useState(0); 
+  const [tie, setTie] = useState(0); 
 
   let winner = determineWinner(squares); 
+
+
+  function isTied() {
+    if(winner === null) {
+      console.log(!squares.includes(null));
+      return !squares.includes(null); 
+    }
+  }
+  
+
+
+  function handleScore() {
+    if(winner[0] === x) {
+      setXScore(xScore + 1); 
+    }
+    else if(winner[0] === o) {
+      setOScore(oScore + 1); 
+    } else {
+      setTie(tie + 1); 
+    }
+  }
 
   function handlePlayer(i) {
     const newSquares = squares.slice(); 
@@ -84,6 +108,17 @@ function Board({ isVisbile,  showMenu }) {
     }
   }
   
+  function handleNextGame() {
+    setSquares(Array(9).fill(null)); 
+    setXisNext(true);
+    handleScore(); 
+    const squareDivs = document.querySelectorAll('.square'); 
+    squareDivs.forEach((element) => {
+      element.classList.remove('x-highlight');
+      element.classList.remove('o-highlight');
+    })
+  }
+  
   return(
     <div className="grid-container">
         <img className="game-logo" src={logo} alt="logo" />
@@ -103,14 +138,18 @@ function Board({ isVisbile,  showMenu }) {
           return <Square key={i} player={images} onSquareClick={() => handlePlayer(i)} id={i}/>
         })} 
         
-        <ScoreBoard player={'X (You)'}/>
-        <ScoreBoard player={'Ties'} background={'silver'} />
-        <ScoreBoard player={'O (CPU)'} background={'yellow'} /> 
+        <ScoreBoard heading={'X (You)'} score={xScore}/>
+        <ScoreBoard heading={'Ties'} background={'silver'} score={tie}/>
+        <ScoreBoard heading={'O (CPU)'} background={'yellow'} score={oScore}/> 
         {winner ? 
             winner[0] === x ? 
-                  <Modal onQuit={handleQuit} msg={"YOU WON!"} winner={x} roundColor={'x-color'} winnerArray={winner}/> : 
-                        <Modal onQuit={handleQuit} msg={"Oh No You Lost..."} winner={o} roundColor={'o-color'} winnerArray={winner}/>: 
+                  <Modal onNextGame={handleNextGame} onQuit={handleQuit} msg={"YOU WON!"} winner={x} roundColor={'x-color'} winnerArray={winner}  tied={false}/> : 
+                        <Modal onNextGame={handleNextGame} onQuit={handleQuit} msg={"Oh No You Lost..."} winner={o} roundColor={'o-color'} winnerArray={winner} tied={false}/>: 
         null}
+
+        {isTied() ? <Modal onNextGame={handleNextGame} onQuit={handleQuit} msg={""} winner={x} roundColor={''} winnerArray={winner} tied={true}/>: 
+        null
+        }
     </div>
   )
 }
@@ -131,7 +170,7 @@ function Square({player, onSquareClick, id}) {
     )
   } else {
     return(
-      <div className={`square a${id}`} onClick={onSquareClick}>
+      <div  className={`square a${id}`} onClick={onSquareClick}>
         <img className={`letters ${classLetter}`} src={player}  alt="player" />
       </div>
     )
@@ -139,10 +178,12 @@ function Square({player, onSquareClick, id}) {
 }
 
 
-function Modal({msg, winner, roundColor, winnerArray, onQuit}) {
+function Modal({msg, winner, roundColor, winnerArray, onQuit, onNextGame, tied}) {
   useEffect(() => {
-    highlightWinner(winnerArray[0], winnerArray[1]) 
-  }, [winnerArray]);
+    if(!tied) {
+      highlightWinner(winnerArray[0], winnerArray[1]) 
+    }
+  }, [winnerArray, tied]);
  
   function highlightWinner(winnerLetter, winningIndex) {
     if(!winnerLetter) {
@@ -169,26 +210,39 @@ function Modal({msg, winner, roundColor, winnerArray, onQuit}) {
   }
 
 
-  
-  return(
-    <div className="modal">
+  if(!tied) {
+    return(
+      <div className="modal">
+        <p>{msg}</p>
+        <div className="winner-display">
+          <img src={winner} alt="winner-img" />
+          <h2 className={roundColor}>Takes the Round</h2>
+        </div>
+        <button onClick={onQuit} className="gray-btn">Quit</button>
+        <button onClick={onNextGame}className="small-y-btn">Next Round</button>
+      </div>
+      
+    )
+  } else {
+    return(
+      <div className="modal">
       <p>{msg}</p>
       <div className="winner-display">
-        <img src={winner} alt="winner-img" />
-        <h2 className={roundColor}>Takes the Round</h2>
+        <h2> Round Tied </h2>
       </div>
       <button onClick={onQuit} className="gray-btn">Quit</button>
-      <button className="small-y-btn">Next Round</button>
+      <button onClick={onNextGame}className="small-y-btn">Next Round</button>
     </div>
-    
-  )
+    )
+  }
+  
 }
 
-function ScoreBoard({player, background}) {
+function ScoreBoard({heading, background, score}) {
   return(
     <div className={`score-board ${background}`}>
-      <p> {player} </p>
-      <h2>0</h2>
+      <p> {heading} </p>
+      <h2>{score}</h2>
     </div>
   )
 }
