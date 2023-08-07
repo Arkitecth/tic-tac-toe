@@ -14,9 +14,18 @@ function App() {
 
 function Menu() {
   const [show, setShow] = useState(true); 
+  const [players, setPlayers] = useState(["X (P1)", "O (P2)"]);
   function handleClick() {
     setShow(!show); 
   }
+
+  function handleX() {
+    setPlayers(["X (P1)", "O (P2)"]); 
+  }
+  function handleO() {
+    setPlayers(["X (P2)", "O (P1)"]); 
+  }
+  
   if(show) {
     return(
       <div className="menu-container">
@@ -25,23 +34,24 @@ function Menu() {
             <p>Pick Player 1's Mark</p>
             <div className="selection-block">
               {/* X */}
-              <svg className="x" xmlns="http://www.w3.org/2000/svg" width="198" height="54" viewBox="0 0 198 54" fill="none">
+              <svg onClick={ handleX} className="menu-x" xmlns="http://www.w3.org/2000/svg" width="198" height="54" viewBox="0 0 198 54" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M114.557 16.2897L109.71 11.4431C109.12 10.8523 108.162 10.8523 107.571 11.4431L99 20.014L90.429 11.4431C89.8383 10.8523 88.8805 10.8523 88.2897 11.4431L83.4431 16.2897C82.8523 16.8805 82.8523 17.8383 83.4431 18.429L92.014 27L83.4431 35.571C82.8523 36.1617 82.8523 37.1195 83.4431 37.7103L88.2897 42.5569C88.8805 43.1477 89.8383 43.1477 90.429 42.5569L99 33.986L107.571 42.5569C108.162 43.1477 109.12 43.1477 109.71 42.5569L114.557 37.7103C115.148 37.1195 115.148 36.1617 114.557 35.571L105.986 27L114.557 18.429C115.148 17.8383 115.148 16.8805 114.557 16.2897Z" fill="#A8BFC9"/>
               </svg>
   
               {/* O */}
-              <svg className="o" xmlns="http://www.w3.org/2000/svg" width="198" height="54" viewBox="0 0 198 54" fill="none">
+              <svg onClick={ handleO } className="menu-o" xmlns="http://www.w3.org/2000/svg" width="198" height="54" viewBox="0 0 198 54" fill="none">
                 <rect width="198" height="54" rx="10" fill="#A8BFC9"/>
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M114.741 26.8706C114.741 18.1055 107.636 11 98.8706 11C90.1055 11 83 18.1055 83 26.8706C83 35.6357 90.1055 42.7412 98.8706 42.7412C107.636 42.7412 114.741 35.6357 114.741 26.8706ZM92.4048 26.8706C92.4048 23.2996 95.2996 20.4048 98.8706 20.4048C102.442 20.4048 105.336 23.2996 105.336 26.8706C105.336 30.4416 102.442 33.3364 98.8706 33.3364C95.2996 33.3364 92.4048 30.4416 92.4048 26.8706Z" fill="#1A2A33"/>
               </svg>
                 
             </div>
+            <p className="remember-msg">Remember: X Goes First</p>
           </div>
           <MenuButtons onButtonClick={handleClick}/>
         </div>
     )
   } else {
-    return <Board isVisbile={ show } showMenu={setShow} />
+    return <Board isVisbile={ show } showMenu={setShow} playerLetters={players} />
   }
 
    
@@ -58,30 +68,21 @@ function MenuButtons({onButtonClick}) {
   )
 }
 
-function Board({ isVisbile,  showMenu }) {
+function Board({ isVisbile,  showMenu, playerLetters}) {
   const [xisNext, setXisNext] = useState(true); 
   const [squares, setSquares] = useState(Array(9).fill(null)); 
   const [xScore, setXScore] = useState(0); 
   const [oScore, setOScore] = useState(0); 
   const [tie, setTie] = useState(0); 
+  const [restartClicked, setRestartClicked] = useState(false); 
 
   let winner = determineWinner(squares); 
-
-
-  function isTied() {
-    if(winner === null) {
-      console.log(!squares.includes(null));
-      return !squares.includes(null); 
-    }
-  }
   
-
-
   function handleScore() {
-    if(winner[0] === x) {
+    if(winner && winner[0] === x) {
       setXScore(xScore + 1); 
     }
-    else if(winner[0] === o) {
+    else if(winner && winner[0] === o) {
       setOScore(oScore + 1); 
     } else {
       setTie(tie + 1); 
@@ -104,8 +105,19 @@ function Board({ isVisbile,  showMenu }) {
 
   function handleQuit() {
     if(!isVisbile) {
-      showMenu(!isVisbile); 
+      document.querySelector('body').classList.remove('overlay'); 
+      showMenu(!isVisbile);
     }
+  }
+
+  function handleRestartState() {
+    setRestartClicked(!restartClicked); 
+  }
+
+  function handleRestart() {
+    setSquares(Array(9).fill(null)); 
+    setXisNext(true);
+    handleRestartState(); 
   }
   
   function handleNextGame() {
@@ -133,23 +145,17 @@ function Board({ isVisbile,  showMenu }) {
       }
           <p>Turn</p>
         </div>
-        <img className="gray-btn" src={restart} alt="restart" />
+        <img onClick={handleRestartState} className="gray-btn" src={restart} alt="restart" />
         {squares.map((images, i) => {
           return <Square key={i} player={images} onSquareClick={() => handlePlayer(i)} id={i}/>
         })} 
         
-        <ScoreBoard heading={'X (You)'} score={xScore}/>
+        <ScoreBoard heading={playerLetters[0]} score={xScore}/>
         <ScoreBoard heading={'Ties'} background={'silver'} score={tie}/>
-        <ScoreBoard heading={'O (CPU)'} background={'yellow'} score={oScore}/> 
-        {winner ? 
-            winner[0] === x ? 
-                  <Modal onNextGame={handleNextGame} onQuit={handleQuit} msg={"YOU WON!"} winner={x} roundColor={'x-color'} winnerArray={winner}  tied={false}/> : 
-                        <Modal onNextGame={handleNextGame} onQuit={handleQuit} msg={"Oh No You Lost..."} winner={o} roundColor={'o-color'} winnerArray={winner} tied={false}/>: 
-        null}
+        <ScoreBoard heading={playerLetters[1]} background={'yellow'} score={oScore}/> 
+        <Modal winnerArray={winner} onQuit={handleQuit} onNextGame={handleNextGame} squares={squares}/>
 
-        {isTied() ? <Modal onNextGame={handleNextGame} onQuit={handleQuit} msg={""} winner={x} roundColor={''} winnerArray={winner} tied={true}/>: 
-        null
-        }
+        {restartClicked ? <RestartModal onCancel={handleRestartState} onRestart={handleRestart} /> : null }
     </div>
   )
 }
@@ -178,17 +184,28 @@ function Square({player, onSquareClick, id}) {
 }
 
 
-function Modal({msg, winner, roundColor, winnerArray, onQuit, onNextGame, tied}) {
+function Modal({winnerArray, onQuit, onNextGame, squares}) {
+  function isTied() {
+    if(winnerArray === null) {
+      return !squares.includes(null); 
+    }
+    return false; 
+  }
+
+  let tied = isTied(); 
+  document.querySelector('body').classList.remove('overlay'); 
   useEffect(() => {
-    if(!tied) {
+    if(!tied && winnerArray != null) {
       highlightWinner(winnerArray[0], winnerArray[1]) 
     }
   }, [winnerArray, tied]);
- 
+  
   function highlightWinner(winnerLetter, winningIndex) {
     if(!winnerLetter) {
       return; 
     }
+
+    document.querySelector('body').classList.add('overlay');
 
     const firstSquare = document.querySelector(`div.square.a${winningIndex[0]}`); 
     const secondSquare =document.querySelector(`div.square.a${winningIndex[1]}`); 
@@ -196,46 +213,76 @@ function Modal({msg, winner, roundColor, winnerArray, onQuit, onNextGame, tied})
 
     if(winnerLetter === x) {
       firstSquare.classList.add('x-highlight');
-      firstSquare.firstElementChild.classList.add('dark-x'); 
       secondSquare.classList.add('x-highlight'); 
-      secondSquare.firstElementChild.classList.add('dark-x'); 
       thirdSquare.classList.add('x-highlight');
-      thirdSquare.firstElementChild.classList.add('dark-x'); 
      
     } else {
       firstSquare.classList.add('o-highlight'); 
-      secondSquare.classList.add('o-highlight'); 
+      secondSquare.classList.add('o-highlight');
       thirdSquare.classList.add('o-highlight'); 
     } 
+    firstSquare.firstElementChild.classList.add('dark');
+    secondSquare.firstElementChild.classList.add('dark');  
+    thirdSquare.firstElementChild.classList.add('dark'); 
+    
   }
 
 
-  if(!tied) {
+  if(winnerArray && winnerArray[0] === x) {
     return(
       <div className="modal">
-        <p>{msg}</p>
+        <p>You Won</p>
         <div className="winner-display">
-          <img src={winner} alt="winner-img" />
-          <h2 className={roundColor}>Takes the Round</h2>
+          <img src={x} alt="winner-img" />
+          <h2 className="x-color">Takes the Round</h2>
         </div>
         <button onClick={onQuit} className="gray-btn">Quit</button>
         <button onClick={onNextGame}className="small-y-btn">Next Round</button>
       </div>
       
     )
-  } else {
+  } else if(winnerArray && winnerArray[0] === o) {
     return(
       <div className="modal">
-      <p>{msg}</p>
+      <p>Oh no You Lost...</p>
       <div className="winner-display">
-        <h2> Round Tied </h2>
+        <img src={o} alt="winner-img" />
+        <h2 className="o-color">Takes the Round</h2>
       </div>
       <button onClick={onQuit} className="gray-btn">Quit</button>
       <button onClick={onNextGame}className="small-y-btn">Next Round</button>
     </div>
     )
+  } else if(tied) {
+    return(
+      <div className="modal">
+      <p></p>
+      <div className="winner-display">
+        <h2 className="silver-color">Round Tied</h2>
+      </div>
+      <button onClick={onQuit} className="gray-btn">Quit</button>
+      <button onClick={onNextGame}className="small-y-btn">Next Round</button>
+    </div>
+    )
+  
+  } else {
+    return null; 
   }
   
+}
+
+
+function RestartModal({onCancel, onRestart}) {
+  return(
+    <div className="modal">
+    <p></p>
+    <div className="winner-display">
+      <h2 className="silver-color">Restart Game?</h2>
+    </div>
+    <button onClick={onCancel} className="gray-btn">No, Cancel</button>
+    <button onClick={onRestart}className="small-y-btn">Yes, Restart</button>
+  </div>
+  )
 }
 
 function ScoreBoard({heading, background, score}) {
