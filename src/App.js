@@ -14,16 +14,32 @@ function App() {
 
 function Menu() {
   const [show, setShow] = useState(true); 
-  const [players, setPlayers] = useState(["X (P1)", "O (P2)"]);
-  function handleClick() {
+  const [players, setPlayers] = useState(["X (P1)", "O (P2)"])
+  const [player1Marker, setPlayer1Marker] = useState("x"); 
+  const [cpu, setCPU] = useState(false); 
+  function handleBlueClick() {
+    player1Marker === 'x' ? setPlayers(["X (P1)", "O (P2)"]) : setPlayers(["X (P2)", "O (P1)"])
+    setShow(!show); 
+    setCPU(false); 
+
+  }
+
+  function handleYellowClick() {
+    player1Marker === 'x' ? setPlayers(["X (You)", "O (CPU)"]) : setPlayers(["X (CPU)", "O (You)"])
+    setCPU(true); 
     setShow(!show); 
   }
 
   function handleX() {
-    setPlayers(["X (P1)", "O (P2)"]); 
+    setPlayers(["X (P1)", "O (P2)"])
+    setPlayer1Marker('x'); 
+ 
+  
   }
   function handleO() {
-    setPlayers(["X (P2)", "O (P1)"]); 
+    setPlayers(["X (P2)", "O (P1)"])
+    setPlayer1Marker('o'); 
+   
   }
   
   if(show) {
@@ -47,37 +63,45 @@ function Menu() {
             </div>
             <p className="remember-msg">Remember: X Goes First</p>
           </div>
-          <MenuButtons onButtonClick={handleClick}/>
+          <MenuButtons onYellowClicked={handleYellowClick} onBlueClicked={handleBlueClick}/>
         </div>
     )
   } else {
-    return <Board isVisbile={ show } showMenu={setShow} playerLetters={players} />
+    return <Board isVisbile={ show } showMenu={setShow} playerLetters={players} isCpu={cpu} playerMarker={ player1Marker }/>
   }
 
    
  
 }
 
-function MenuButtons({onButtonClick}) {
+function MenuButtons({onYellowClicked, onBlueClicked}) {
   return(
     <>
-     <button className="y-button">New Game (VS CPU)</button>
-     <button onClick={onButtonClick} className="green-button">New Game (VS PLAYER)</button>
+     <button onClick={onYellowClicked} className="y-button">New Game (VS CPU)</button>
+     <button onClick={onBlueClicked} className="green-button">New Game (VS PLAYER)</button>
     </>
    
   )
 }
 
-function Board({ isVisbile,  showMenu, playerLetters}) {
+
+
+function Board({ isVisbile,  showMenu, playerLetters, isCpu, playerMarker}) {
   const [xisNext, setXisNext] = useState(true); 
   const [squares, setSquares] = useState(Array(9).fill(null)); 
   const [xScore, setXScore] = useState(0); 
   const [oScore, setOScore] = useState(0); 
   const [tie, setTie] = useState(0); 
   const [restartClicked, setRestartClicked] = useState(false); 
-
-  let winner = determineWinner(squares); 
   
+  let winner = determineWinner(squares); 
+  let cpuMarker = x; 
+  if(playerMarker === "x") {
+    cpuMarker = o; 
+  } else {
+    cpuMarker = x; 
+  }
+
   function handleScore() {
     if(winner && winner[0] === x) {
       setXScore(xScore + 1); 
@@ -89,6 +113,29 @@ function Board({ isVisbile,  showMenu, playerLetters}) {
     }
   }
 
+  useEffect(() => {
+    if(isCpu && winner === null && squares.includes(null)) {
+      setTimeout(() => {
+        const newSquares = squares.slice();
+        let randomNumber = Math.floor(Math.random() * 9); 
+        while(newSquares[randomNumber] !== null) {
+        randomNumber = Math.floor(Math.random() * 9); 
+        }
+        if(cpuMarker === x && xisNext) {
+          newSquares[randomNumber] = x;
+          setSquares(newSquares);
+          setXisNext(!xisNext);
+        } else if(cpuMarker === o && !xisNext) {
+          newSquares[randomNumber] = o;
+          setSquares(newSquares);
+          setXisNext(!xisNext);
+        }
+      }, 500)
+    }
+      
+    
+  },[setSquares, cpuMarker, xisNext, isCpu, squares, setXisNext, winner])
+
   function handlePlayer(i) {
     const newSquares = squares.slice(); 
     if(newSquares[i]) {
@@ -98,6 +145,7 @@ function Board({ isVisbile,  showMenu, playerLetters}) {
       newSquares[i] = x; 
     } else {
       newSquares[i] = o;  
+     
     }
     setXisNext(!xisNext);
     setSquares(newSquares);
