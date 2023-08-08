@@ -93,14 +93,7 @@ function Board({ isVisbile,  showMenu, playerLetters, isCpu, playerMarker}) {
   const [oScore, setOScore] = useState(0); 
   const [tie, setTie] = useState(0); 
   const [restartClicked, setRestartClicked] = useState(false); 
-  
   let winner = determineWinner(squares); 
-  let cpuMarker = x; 
-  if(playerMarker === "x") {
-    cpuMarker = o; 
-  } else {
-    cpuMarker = x; 
-  }
 
   function handleScore() {
     if(winner && winner[0] === x) {
@@ -113,7 +106,18 @@ function Board({ isVisbile,  showMenu, playerLetters, isCpu, playerMarker}) {
     }
   }
 
-  useEffect(() => {
+  function getMarker() {
+    let cpuMarker = x; 
+    if(playerMarker === "x") {
+      cpuMarker = o; 
+    } else {
+      cpuMarker = x; 
+    }
+    return cpuMarker; 
+  }
+  
+  function handleCpu() {
+    let marker = getMarker(); 
     if(isCpu && winner === null && squares.includes(null)) {
       setTimeout(() => {
         const newSquares = squares.slice();
@@ -121,21 +125,22 @@ function Board({ isVisbile,  showMenu, playerLetters, isCpu, playerMarker}) {
         while(newSquares[randomNumber] !== null) {
         randomNumber = Math.floor(Math.random() * 9); 
         }
-        if(cpuMarker === x && xisNext) {
+        if(marker === x && xisNext) {
           newSquares[randomNumber] = x;
           setSquares(newSquares);
           setXisNext(!xisNext);
-        } else if(cpuMarker === o && !xisNext) {
+        } else if(marker === o && !xisNext) {
           newSquares[randomNumber] = o;
           setSquares(newSquares);
           setXisNext(!xisNext);
         }
       }, 500)
     }
-      
-    
-  },[setSquares, cpuMarker, xisNext, isCpu, squares, setXisNext, winner])
+     
+  }
 
+  handleCpu(); 
+ 
   function handlePlayer(i) {
     const newSquares = squares.slice(); 
     if(newSquares[i]) {
