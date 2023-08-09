@@ -19,9 +19,8 @@ function Menu() {
   const [cpu, setCPU] = useState(false); 
   function handleBlueClick() {
     player1Marker === 'x' ? setPlayers(["X (P1)", "O (P2)"]) : setPlayers(["X (P2)", "O (P1)"])
-    setShow(!show); 
     setCPU(false); 
-
+    setShow(!show); 
   }
 
   function handleYellowClick() {
@@ -33,8 +32,6 @@ function Menu() {
   function handleX() {
     setPlayers(["X (P1)", "O (P2)"])
     setPlayer1Marker('x'); 
- 
-  
   }
   function handleO() {
     setPlayers(["X (P2)", "O (P1)"])
@@ -94,6 +91,7 @@ function Board({ isVisbile,  showMenu, playerLetters, isCpu, playerMarker}) {
   const [tie, setTie] = useState(0); 
   const [restartClicked, setRestartClicked] = useState(false); 
   let winner = determineWinner(squares); 
+  let msg = ""; 
 
   function handleScore() {
     if(winner && winner[0] === x) {
@@ -106,18 +104,49 @@ function Board({ isVisbile,  showMenu, playerLetters, isCpu, playerMarker}) {
     }
   }
 
-  function getMarker() {
-    let cpuMarker = x; 
-    if(playerMarker === "x") {
-      cpuMarker = o; 
-    } else {
-      cpuMarker = x; 
+  function determineMessage() {
+    let player1Marker = getMarker[0]; 
+
+    switch (true) {
+      case isCpu && winner && player1Marker === winner[0]:
+        msg = "You Won!";
+        break;
+      case isCpu && winner && player1Marker !== winner[0]:
+        msg = "Oh no, you lost...";
+        break;
+
+      case !isCpu && winner && player1Marker === winner[0]:
+        msg = "Player 1 Wins!";
+        break;
+      
+      case !isCpu && winner && player1Marker !== winner[0]:
+        msg = "Player 2 Wins!";
+        break;
+    
+      default:
+        msg = ""; 
+        break;
     }
-    return cpuMarker; 
   }
-  
+
+
+  determineMessage();
+
+  function getMarker() {
+    let player1Marker = x;
+    let player2Marker = o;  
+    if(playerMarker === "x") {
+      player2Marker = o;
+      player1Marker = x; 
+    } else {
+      player2Marker = x; 
+      player1Marker = o; 
+    }
+    return [player1Marker, player2Marker];  
+  }
+
   function handleCpu() {
-    let marker = getMarker(); 
+    let marker = getMarker()[1]; 
     if(isCpu && winner === null && squares.includes(null)) {
       setTimeout(() => {
         const newSquares = squares.slice();
@@ -129,12 +158,13 @@ function Board({ isVisbile,  showMenu, playerLetters, isCpu, playerMarker}) {
           newSquares[randomNumber] = x;
           setSquares(newSquares);
           setXisNext(!xisNext);
+          document.querySelector('.square').style.pointerEvents = "none"; 
         } else if(marker === o && !xisNext) {
           newSquares[randomNumber] = o;
           setSquares(newSquares);
           setXisNext(!xisNext);
         }
-      }, 500)
+      }, 250)
     }
      
   }
@@ -143,11 +173,12 @@ function Board({ isVisbile,  showMenu, playerLetters, isCpu, playerMarker}) {
  
   function handlePlayer(i) {
     const newSquares = squares.slice(); 
+    
     if(newSquares[i]) {
       return; 
     }
     if(xisNext) {
-      newSquares[i] = x; 
+      newSquares[i] = x;
     } else {
       newSquares[i] = o;  
      
@@ -206,7 +237,7 @@ function Board({ isVisbile,  showMenu, playerLetters, isCpu, playerMarker}) {
         <ScoreBoard heading={playerLetters[0]} score={xScore}/>
         <ScoreBoard heading={'Ties'} background={'silver'} score={tie}/>
         <ScoreBoard heading={playerLetters[1]} background={'yellow'} score={oScore}/> 
-        <Modal winnerArray={winner} onQuit={handleQuit} onNextGame={handleNextGame} squares={squares}/>
+        <Modal message={msg} winnerArray={winner} onQuit={handleQuit} onNextGame={handleNextGame} squares={squares}/>
 
         {restartClicked ? <RestartModal onCancel={handleRestartState} onRestart={handleRestart} /> : null }
     </div>
@@ -237,7 +268,7 @@ function Square({player, onSquareClick, id}) {
 }
 
 
-function Modal({winnerArray, onQuit, onNextGame, squares}) {
+function Modal({message, winnerArray, onQuit, onNextGame, squares}) {
   function isTied() {
     if(winnerArray === null) {
       return !squares.includes(null); 
@@ -284,7 +315,7 @@ function Modal({winnerArray, onQuit, onNextGame, squares}) {
   if(winnerArray && winnerArray[0] === x) {
     return(
       <div className="modal">
-        <p>You Won</p>
+        <p>{message}</p>
         <div className="winner-display">
           <img src={x} alt="winner-img" />
           <h2 className="x-color">Takes the Round</h2>
@@ -297,7 +328,7 @@ function Modal({winnerArray, onQuit, onNextGame, squares}) {
   } else if(winnerArray && winnerArray[0] === o) {
     return(
       <div className="modal">
-      <p>Oh no You Lost...</p>
+      <p>{message}</p>
       <div className="winner-display">
         <img src={o} alt="winner-img" />
         <h2 className="o-color">Takes the Round</h2>
